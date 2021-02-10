@@ -30,6 +30,11 @@ namespace HdrHistogram.Iteration
         public PercentileEnumerator(HistogramBase histogram, int percentileTicksPerHalfDistance) : base(histogram) 
         {
             _percentileTicksPerHalfDistance = percentileTicksPerHalfDistance;
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
             _percentileLevelToIterateTo = 0.0;
             _reachedLastRecordedValue = false;
         }

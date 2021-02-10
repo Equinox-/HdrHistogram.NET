@@ -22,6 +22,11 @@ namespace HdrHistogram.Iteration
         /// <param name="histogram">The histogram this iterator will operate on</param>
         public RecordedValuesEnumerator(HistogramBase histogram) :base(histogram)
         {
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
             _visitedSubBucketIndex = -1;
             _visitedBucketIndex = -1;
         }

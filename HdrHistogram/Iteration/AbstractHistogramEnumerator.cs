@@ -17,7 +17,7 @@ namespace HdrHistogram.Iteration
     /// </summary>
     internal abstract class AbstractHistogramEnumerator : IEnumerator<HistogramIterationValue>
     {
-        private readonly long _savedHistogramTotalRawCount;
+        private long _savedHistogramTotalRawCount;
         private readonly HistogramIterationValue _currentIterationValue;
         private int _nextBucketIndex;
         private int _nextSubBucketIndex;
@@ -29,7 +29,7 @@ namespace HdrHistogram.Iteration
         private long _nextValueAtIndex;
         
         protected HistogramBase SourceHistogram { get; }
-        protected long ArrayTotalCount { get; }
+        protected long ArrayTotalCount { get; private set; }
         protected int CurrentBucketIndex { get; private set; }
         protected int CurrentSubBucketIndex { get; private set; }
         protected long TotalCountToCurrentIndex { get; private set; }
@@ -40,8 +40,14 @@ namespace HdrHistogram.Iteration
         protected AbstractHistogramEnumerator(HistogramBase histogram)
         {
             SourceHistogram = histogram;
-            _savedHistogramTotalRawCount = histogram.TotalCount;
-            ArrayTotalCount = histogram.TotalCount;
+            _currentIterationValue = new HistogramIterationValue();
+            Reset();
+        }
+
+        public virtual void Reset()
+        {
+            _savedHistogramTotalRawCount = SourceHistogram.TotalCount;
+            ArrayTotalCount = SourceHistogram.TotalCount;
             CurrentBucketIndex = 0;
             CurrentSubBucketIndex = 0;
             _currentValueAtIndex = 0;
@@ -54,7 +60,6 @@ namespace HdrHistogram.Iteration
             _totalValueToCurrentIndex = 0;
             CountAtThisValue = 0;
             _freshSubBucket = true;
-            _currentIterationValue = new HistogramIterationValue();
         }
 
         /// <summary>
@@ -163,11 +168,6 @@ namespace HdrHistogram.Iteration
                 Current = Next();
             }
             return canMove;
-        }
-
-        void IEnumerator.Reset()
-        {
-            //throw new NotImplementedException();
         }
 
         void IDisposable.Dispose()
